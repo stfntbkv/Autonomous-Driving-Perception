@@ -1,0 +1,23 @@
+# System files
+.DS_Store
+
+# Data directories (we'll handle these separately)
+/data/
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# Virtual environments
+venv/
+env/
+
+# Large files
+*.jpg
+*.zip
+*.tar
+*.pth
+*.pt
+
+__pycache__
+todo.ipynb
+data.zip
