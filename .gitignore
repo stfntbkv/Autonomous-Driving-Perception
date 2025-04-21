@@ -3,6 +3,7 @@
 
 # Data directories (we'll handle these separately)
 /data/
+/models/
 
 # Notebook checkpoints
 .ipynb_checkpoints/
