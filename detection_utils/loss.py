@@ -62,8 +62,6 @@ class BboxLoss(nn.Module):
 
 
 
-
-
 class v8DetectionLoss:
     """Criterion class for computing training losses for YOLOv8 object detection."""
 
