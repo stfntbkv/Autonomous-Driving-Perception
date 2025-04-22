@@ -164,6 +164,35 @@ YOLOv8 for object detection and HRNet with two segmentation heads. The pipeline 
 
     * **Place the downloaded file(s)** inside the `saved_models/` directory in your project folder.
 
+## **Results**
 
+### **Detection Model**
 
+**Overall Test Metrics**
+
+| Metric / Subset            | Overall mAP | mAP@50 (IoU=0.5) | mAP@75 (IoU=0.75) |
+|----------------------------|-------------|------------------|-------------------|
+| **Full Test Set**          | 0.319       | 0.573            | 0.302             |
+| Foggy                      | 0.349       | 0.595            | 0.312             |
+| Snowy                      | 0.306       | 0.539            | 0.291             |
+| Rainy                      | 0.310       | 0.575            | 0.288             |
+| Undefined Weather          | 0.344       | 0.606            | 0.330             |
+| Nighttime                  | 0.286       | 0.533            | 0.258             |
+| Undefined Time of Day      | 0.486       | 0.749            | 0.401             |
+
+**Per class Test Metrics**
+
+| Class         | mAP   | mAP@50 | mAP@75 |
+|---------------|-------|--------|--------|
+| Car           | 0.450 | 0.723  | 0.460  |
+| Traffic Sign  | 0.343 | 0.639  | 0.325  |
+| Traffic Light | 0.222 | 0.587  | 0.123  |
+| Person        | 0.312 | 0.630  | 0.272  |
+| Truck         | 0.443 | 0.613  | 0.494  |
+| Bus           | 0.411 | 0.540  | 0.462  |
+| Bike          | 0.231 | 0.488  | 0.194  |
+| Rider         | 0.235 | 0.467  | 0.216  |
+| Motor         | 0.221 | 0.469  | 0.174  |
+
+### **Segmentation Model**
 
