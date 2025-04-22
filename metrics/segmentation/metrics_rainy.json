@@ -1,0 +1,14 @@
+{
+    "iou_lane": {
+        "average": 0.5750712752342224,
+        "background": 0.9750499129295349,
+        "lane_marking": 0.1750926375389099
+    },
+    "iou_drivable": {
+        "average": 0.784021278222402,
+        "background": 0.9603471755981445,
+        "drivable_area": 0.7853327393531799,
+        "alternative_area": 0.6063839197158813
+    },
+    "test_duration_seconds": 77.77589344978333
+}
