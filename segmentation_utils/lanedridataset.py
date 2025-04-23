@@ -5,6 +5,33 @@ import os
 
 
 class SegmentationDataset(Dataset):
+    """
+    A custom PyTorch Dataset for multi-task semantic segmentation, specifically designed 
+    for road scene understanding with lane markings and drivable area masks.
+
+    This dataset:
+    - Loads RGB images from a specified directory,
+    - Loads two corresponding masks:
+        1. Lane markings,
+        2. Drivable areas,
+    - Applies optional Albumentations transformations (e.g., resizing, normalization),
+    - Converts all data into PyTorch tensors.
+
+    Args:
+        image_dir (str): Path to the directory containing RGB input images.
+        lane_mask_dir (str): Path to the directory containing lane mask images.
+        drivable_area_dir (str): Path to the directory containing drivable area masks.
+        image_names (List[str]): List of image base filenames (without extension).
+        transform (albumentations.Compose, optional): Optional Albumentations transform 
+            pipeline applied jointly to the image and both masks.
+
+    Returns:
+        dict: A dictionary for each sample with:
+            - 'image': Tensor of shape (3, H, W), normalized to [0, 1].
+            - 'lane_mask': LongTensor of shape (H, W), pixel-wise lane class indices.
+            - 'drivable_mask': LongTensor of shape (H, W), pixel-wise drivable area class indices.
+
+    """
     def __init__(self, image_dir,lane_mask_dir,drivable_area_dir,image_names, transform=None):
         """
         Args:

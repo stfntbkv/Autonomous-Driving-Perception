@@ -10,14 +10,35 @@ import albumentations as A
 
 class Instances:
     """
-    Simplified Instances class from Ultralytics focusing ONLY on bounding boxes.
-    Stores data for detected instances in numpy format.
+    Lightweight bounding box container for object detection pipelines.
+
+    This class is a simplified version of Ultralytics' Instances and focuses exclusively on bounding boxes.
+    It provides a convenient wrapper for manipulating boxes across formats and coordinate systems (e.g., 
+    normalized vs. absolute), and supports transformations commonly needed during training and augmentation.
+
+    Attributes:
+        bboxes (np.ndarray): Array of shape (N, 4) containing bounding boxes.
+        bbox_format (str): Format of the bounding boxes ('xyxy' or 'xywh').
+        normalized (bool): Whether the bounding boxes are normalized to [0, 1].
+
+    Supported Operations:
+        - Format conversion: between 'xyxy' and 'xywh'.
+        - Normalization and denormalization based on image size.
+        - Padding and clipping bounding boxes to image bounds.
+        - Indexing to retrieve subsets of boxes.
+        - Area-based filtering and scaling.
+
+    Example:
+        >>> instances = Instances([[10, 20, 100, 200]], bbox_format='xyxy')
+        >>> instances.normalize(w=640, h=640)
+        >>> instances.denormalize(w=640, h=640)
     """
+
     def __init__(self, bboxes, bbox_format='xyxy', normalized=False):
         """Initialize Instances object with bounding boxes, format, and normalization status."""
         if isinstance(bboxes, list):
             bboxes = np.array(bboxes, dtype=np.float32)
-        elif isinstance(bboxes, torch.Tensor): # Added torch dependency back for this check
+        elif isinstance(bboxes, torch.Tensor):
             bboxes = bboxes.cpu().numpy()
 
 
@@ -38,13 +59,13 @@ class Instances:
 
     def __getitem__(self, index):
         """Retrieve instance(s) by index. Returns a *new* Instances object."""
-        if isinstance(index, (int, np.integer)): # Handle single integer index
+        if isinstance(index, (int, np.integer)): 
              new_bboxes = self.bboxes[index:index+1]
-        elif isinstance(index, (slice, list, np.ndarray)): # Handle slice, list, or boolean mask
+        elif isinstance(index, (slice, list, np.ndarray)):
              new_bboxes = self.bboxes[index]
         else:
             raise TypeError(f"Instances index must be int, slice, list, or np.ndarray, not {type(index)}")
-        # Return a new object with the subset of boxes
+      
         return Instances(new_bboxes, bbox_format=self.bbox_format, normalized=self.normalized)
 
 
@@ -87,7 +108,7 @@ class Instances:
         if len(self.bboxes) > 0:
             self.convert_bbox(format='xyxy'); self.bboxes[:, [0, 2]] = self.bboxes[:, [0, 2]].clip(0, w); self.bboxes[:, [1, 3]] = self.bboxes[:, [1, 3]].clip(0, h)
 
-    def scale(self, scale_w, scale_h, bbox_only=True): # bbox_only is now always True
+    def scale(self, scale_w, scale_h, bbox_only=True): 
         """Scale bounding boxes. Assumes scaling absolute coordinates."""
         if len(self.bboxes) > 0:
              was_normalized = self.normalized
@@ -106,9 +127,35 @@ class Instances:
 
 class RandomPerspective:
     """
-    Adaptation of Ultralytics RandomPerspective.
-    Applies random perspective and affine transformations.
-    *** Simplified to handle ONLY bounding boxes. ***
+    Applies random perspective and affine transformations to an image and its bounding boxes.
+
+    This class is a stripped-down and custom version of the augmentation used in Ultralytics' YOLO pipelines.
+    It introduces controlled randomness in rotation, translation, scaling, shearing, and perspective, which
+    helps improve the generalization of object detection models during training.
+
+    This version is adapted to work with custom `Instances` objects and assumes all label input 
+    is structured as a dictionary containing image, class labels, and bounding boxes.
+
+    Args:
+        degrees (float): Max degrees for random rotation.
+        translate (float): Maximum translation as a fraction of image dimensions.
+        scale (float): Scaling factor range for zoom in/out.
+        shear (float): Maximum shearing factor in degrees.
+        perspective (float): Perspective distortion coefficient.
+        border (Tuple[int, int]): Optional mosaic border padding (y, x).
+
+    Call Args (dict):
+        - 'img': The input image (H x W x C).
+        - 'cls': Array of class indices.
+        - 'instances': An Instances object with bounding boxes.
+        - 'mosaic_border' (optional): Border padding for mosaic images.
+
+    Returns:
+        dict: Transformed image, filtered class labels, updated bounding boxes, and resized shape.
+
+    Example:
+        >>> transformer = RandomPerspective(degrees=10, translate=0.1)
+        >>> augmented = transformer({'img': img, 'cls': labels, 'instances': boxes})
     """
     def __init__(self,degrees=0.0, translate=0.1, scale=0.5, shear=0.0, perspective=0.0,border=(0, 0)):
         self.degrees = degrees
@@ -150,7 +197,6 @@ class RandomPerspective:
                                   bbox_format="xyxy",
                                   normalized=False)
 
-        # Clip results to the warped image size (self.size)
         new_instances.clip(*self.size)
 
     
@@ -162,8 +208,8 @@ class RandomPerspective:
         output_labels = {}
         output_labels['img'] = img_transformed
         output_labels['cls'] = final_cls
-        output_labels['instances'] = final_instances # Return simplified Instances object
-        output_labels['resized_shape'] = img_transformed.shape[:2] # Final shape after transform
+        output_labels['instances'] = final_instances 
+        output_labels['resized_shape'] = img_transformed.shape[:2] 
 
         return output_labels
 
@@ -217,8 +263,7 @@ class RandomPerspective:
         xy = xy[:, :2].reshape(n, 8)
         x = xy[:, [0, 2, 4, 6]]
         y = xy[:, [1, 3, 5, 7]]
-        #return np.stack((x.min(1), y.min(1), x.max(1), y.max(1)), axis=1).astype(bboxes.dtype) # Ultralytics uses stack
-        # Corrected stack usage (as per numpy docs, needs sequence of arrays)
+
         new_bboxes = np.concatenate(
             (x.min(1, keepdims=True), y.min(1, keepdims=True), x.max(1, keepdims=True), y.max(1, keepdims=True)), axis=1
         ).astype(bboxes.dtype)
@@ -229,18 +274,49 @@ class RandomPerspective:
     @staticmethod
     def box_candidates(box1, box2, wh_thr=2, ar_thr=100, area_thr=0.1, eps=1e-16):
         """Filter candidates based on size, aspect ratio, and area ratio."""
-        # box1: original (scaled), box2: transformed (pixels)
+ 
         w1, h1 = box1[2] - box1[0], box1[3] - box1[1]
         w2, h2 = box2[2] - box2[0], box2[3] - box2[1]
-        ar = np.maximum(w2 / (h2 + eps), h2 / (w2 + eps))  # aspect ratio
-        return (w2 > wh_thr) & (h2 > wh_thr) & (w2 * h2 / (w1 * h1 + eps) > area_thr) & (ar < ar_thr)  # candidates
+        ar = np.maximum(w2 / (h2 + eps), h2 / (w2 + eps))
+        return (w2 > wh_thr) & (h2 > wh_thr) & (w2 * h2 / (w1 * h1 + eps) > area_thr) & (ar < ar_thr) 
 
 
 
 
 
 class DetectionDatasetMosaic(Dataset):
-   
+    """
+    A custom PyTorch Dataset class for object detection with support for YOLO-style mosaic augmentation
+    and advanced preprocessing, including optional post-transforms, letterboxing, and validation-friendly paths.
+
+    This dataset handles:
+    - Standard single-image loading with letterbox resizing,
+    - Mosaic augmentation: combining 4 images into a single training sample,
+    - Random perspective transformation (affine & perspective),
+    - Optional Albumentations post-transforms (e.g., normalization, color jitter),
+    - Normalized bounding box output in [0,1] format for compatibility with YOLO-style models,
+    - Special treatment for validation mode (no augmentations, no mosaic).
+
+    Args:
+        image_dir (str): Directory containing the image files (assumed to be .jpg).
+        bboxes_dic (dict): Dictionary of annotations with image filenames as keys and values containing
+                           "boxes" and "labels".
+        degrees (float): Max rotation degrees for perspective transformation.
+        translate (float): Max translation fraction for perspective transformation.
+        scale (float): Scale variation range for perspective transformation.
+        shear (float): Max shearing factor for perspective transformation.
+        perspective (float): Amount of perspective distortion applied.
+        post_transform (albumentations.Compose, optional): Additional transformations (e.g., normalization).
+        imgsz (int): Target square image size (e.g., 640x640).
+        mosaic_prob (float): Probability of applying mosaic augmentation during training.
+        is_validation (bool): If True, disables mosaic and all random augmentations.
+
+    Returns:
+        A dictionary per item with:
+            - 'image': Float tensor of shape (3, imgsz, imgsz), pixel values in [0, 1].
+            - 'bboxes': Float tensor of shape (N, 4) in normalized [x1, y1, x2, y2] format.
+            - 'labels': Long tensor of shape (N,) with class indices.
+    """
     def __init__(self, image_dir, bboxes_dic,
                  degrees=5.0, translate=0.1, scale=0.5, shear=2.0, perspective=0.0001,
                  post_transform=None, 

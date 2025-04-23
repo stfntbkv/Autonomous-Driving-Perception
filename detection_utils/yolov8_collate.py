@@ -1,5 +1,36 @@
 import torch
 def yolov8_collate_fn(batch):
+    """
+    Custom collate function for YOLOv8-style object detection models.
+
+    This function processes a batch of image samples and their corresponding annotations
+    to prepare them for training and validation. It handles:
+      - Stacking input images into a single batch tensor,
+      - Converting bounding boxes from (xyxy) to (xywh) format (as required by YOLOv8),
+      - Creating additional metadata for validation (absolute coordinate targets),
+      - Constructing target tensors for model training and evaluation.
+
+    Args:
+        batch (List[Dict]): List of dictionaries, each with:
+            - 'image': Tensor of shape (3, H, W),
+            - 'bboxes': Tensor of shape (N, 4), in normalized (xyxy) format,
+            - 'labels': Tensor of shape (N,), containing class indices.
+
+    Returns:
+        Dict[str, Union[Tensor, List[Dict]]]: A dictionary with:
+            - 'img': Tensor of shape (B, 3, H, W), stacked images.
+            - 'batch_idx': Tensor of shape (total_boxes,), batch index for each box.
+            - 'cls': Tensor of shape (total_boxes,), class labels for each box.
+            - 'bboxes': Tensor of shape (total_boxes, 4), boxes in (cx, cy, w, h) format.
+            - 'targets_for_metric': List of length B with dicts: {'boxes': Tensor [N, 4], 'labels': Tensor [N]}.
+            - 'img_shape': Tuple[int, int], height and width of the input images.
+
+    Note:
+        Bounding boxes are assumed to be normalized and in (xyxy) format initially.
+        The function handles empty boxes gracefully and ensures compatibility with both
+        training loss and validation metric computation.
+    """
+    
     # Stack images
     images = torch.stack([item["image"] for item in batch])
     img_height, img_width = images.shape[2], images.shape[3]

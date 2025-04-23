@@ -63,7 +63,39 @@ class BboxLoss(nn.Module):
 
 
 class v8DetectionLoss:
-    """Criterion class for computing training losses for YOLOv8 object detection."""
+    """
+    Loss function module for YOLOv8-style object detection training.
+
+    Computes a multi-part loss tailored for anchor-free object detectors like YOLOv8. It includes:
+    - **Bounding Box Regression Loss** using Distribution Focal Loss (DFL),
+    - **Classification Loss** using BCEWithLogitsLoss (with optional class-positive weighting),
+    - **Distribution Loss** for discretized bounding box refinement,
+    - **Task-Aligned Assignment** to dynamically match predictions to ground-truth.
+
+    The loss integrates model predictions with dynamic assignment logic and handles 
+    preprocessing of targets, decoding of bounding boxes, and normalization for robust training.
+
+    Args:
+        model (nn.Module): YOLOv8 model containing the final `Detect` head. Must not be DataParallel.
+        tal_topk (int, optional): Top-k candidates to retain in Task-Aligned Assignment (default: 10).
+
+    Attributes:
+        nc (int): Number of classes.
+        reg_max (int): Max value for distributional regression (controls output channels).
+        device (torch.device): Device used for computation.
+        stride (List[int]): Detection head strides.
+        use_dfl (bool): Whether Distribution Focal Loss is used (True if reg_max > 1).
+        bce (nn.BCEWithLogitsLoss): Binary cross-entropy loss used for classification.
+        bbox_loss (BboxLoss): Bounding box regression loss module.
+        assigner (TaskAlignedAssigner): Dynamic matching module for positive/negative sample selection.
+        proj (torch.Tensor): Projection tensor used in DFL decoding.
+
+    Returns (from __call__):
+        Tuple[torch.Tensor, torch.Tensor]:
+            - **Total loss**: Tensor of shape (3,) multiplied by batch size: [box_loss, cls_loss, dfl_loss].
+            - **Unscaled loss breakdown**: Same 3-component loss, detached from graph for logging or analysis.
+
+    """
 
     def __init__(self, model, tal_topk=10):  # model must be de-paralleled
         """Initialize v8DetectionLoss with model parameters and task-aligned assignment settings."""
