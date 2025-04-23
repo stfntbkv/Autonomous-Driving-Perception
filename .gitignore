@@ -13,7 +13,6 @@ venv/
 env/
 
 # Large files
-*.jpg
 *.zip
 *.tar
 *.pth
