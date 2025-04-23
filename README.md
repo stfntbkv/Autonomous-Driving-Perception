@@ -191,7 +191,7 @@ YOLOv8 for object detection and HRNet with two segmentation heads. The pipeline 
     * Download the Cityscapes labels and images and place it in the `data/` directory.
 
 5.  **Get Pre-trained Models:**
-    * The pre-trained models required to run the web application are hosted on Google Drive.
+    * The pre-trained models are hosted on Google Drive.
     * **Download the model files from:**
         * [Pre-trained models](https://drive.google.com/drive/folders/1RXircitlYSHnJrjfY1uPYQ6y5c74xfI5?usp=share_link)
 
