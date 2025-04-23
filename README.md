@@ -196,3 +196,31 @@ YOLOv8 for object detection and HRNet with two segmentation heads. The pipeline 
 
 ### **Segmentation Model**
 
+**Overall Test Metrics**
+
+| Class                | Overall | Foggy | Snowy | Rainy | Undef. Weather | Nighttime | Undef. Time |
+|----------------------|---------|-------|-------|-------|----------------|-----------|-------------|
+| Drivable Total       | 0.823   | 0.739 | 0.791 | 0.784 | 0.817          | 0.810     | 0.800       |
+| Alternative Area     | 0.675   | 0.526 | 0.605 | 0.606 | 0.658          | 0.650     | 0.630       |
+| Drivable Background  | 0.966   | 0.962 | 0.970 | 0.960 | 0.969          | 0.960     | 0.972       |
+| Drivable Area        | 0.828   | 0.729 | 0.799 | 0.785 | 0.823          | 0.819     | 0.798       |
+| Lane Total           | 0.584   | 0.576 | 0.575 | 0.575 | 0.589          | 0.577     | 0.592       |
+| Lane Markings        | 0.194   | 0.178 | 0.169 | 0.175 | 0.203          | 0.181     | 0.204       |
+| Lane Background      | 0.974   | 0.975 | 0.982 | 0.975 | 0.976          | 0.972     | 0.981       |
+
+
+## Screenshots
+
+### Object Detection
+
+![Example 1](visualizations/detection/prediction_1_comparison.jpg)
+![Example 2](visualizations/detection/prediction_3_comparison.jpg)
+![Example 3](visualizations/detection/prediction_4_comparison.jpg)
+![Example 4](visualizations/detection/prediction_5_comparison.jpg)
+
+### Lane Markings and Drivable Area
+
+![Example 1](visualizations/segmentation/segmentation_1.jpg)
+![Example 2](visualizations/segmentation/segmentation_2.jpg)
+![Example 3](visualizations/segmentation/segmentation_5.jpg)
+![Example 4](visualizations/segmentation/segmentation_8.jpg)
