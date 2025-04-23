@@ -128,6 +128,38 @@ YOLOv8 for object detection and HRNet with two segmentation heads. The pipeline 
 ## Project Structure
 
 ```
+├── metrics/
+│   ├── segmentation/
+│   └── detection/
+├── models/
+│   ├── detection_model.pth
+│   └── segmentation_model.pth
+├── detection_utils/
+│   ├── DetectionDataSetMosaic.py
+│   ├── loss.py
+│   ├── yolov8collate.py
+│   └── ...
+├── segmentation_utils/
+│   ├── lanedridataset.py
+│   ├── lanedrimodel.py
+│   ├── segmentationcollate.py
+│   └── ...
+├── visualizations/
+│   ├── segmentation/
+│   └── detection/
+├── data/
+│   ├── bdd100k/
+│   └── Cityscapes/
+├── logs/
+│   ├── segmentation_logs/
+│   └── detection_logs/
+├── plots/
+│    └── training_plots/
+│        ├── detection_plots/
+│        └── segmentation_plots/
+├── Autonomous-Driving-Perception.ipynb
+├── yolov8l_9class.yaml
+└── yolov8l.pt
 ```
 
 ## Setup and Installation
