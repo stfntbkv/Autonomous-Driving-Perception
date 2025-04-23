@@ -229,7 +229,7 @@ YOLOv8 for object detection and HRNet with two segmentation heads. The pipeline 
 
 ### **Segmentation Model**
 
-**Overall Test Metrics**
+**Overall Test Metrics (IoU)**
 
 | Class                | Overall | Foggy | Snowy | Rainy | Undef. Weather | Nighttime | Undef. Time |
 |----------------------|---------|-------|-------|-------|----------------|-----------|-------------|
