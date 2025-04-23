@@ -1,0 +1,17 @@
+torch==2.5.1
+torchvision==0.20.1
+torchmetrics==1.7.0
+ultralytics==8.3.102
+albumentations==2.0.4
+albucore==0.0.23
+pycocotools==2.0.8
+yacs==0.1.8
+numpy==2.0.1
+pandas==2.2.3
+matplotlib==3.9.2
+seaborn==0.13.2
+Pillow==10.3.0
+tqdm==4.67.1
+pyyaml==6.0.1
+tensorboard==2.18.0
+scikit-learn==1.4.2
