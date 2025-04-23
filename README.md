@@ -158,6 +158,7 @@ YOLOv8 for object detection and HRNet with two segmentation heads. The pipeline 
 │        ├── detection_plots/
 │        └── segmentation_plots/
 ├── Autonomous-Driving-Perception.ipynb
+├── requirements.txt
 ├── yolov8l_9class.yaml
 └── yolov8l.pt
 ```
