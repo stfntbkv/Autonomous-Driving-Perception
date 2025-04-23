@@ -193,9 +193,9 @@ YOLOv8 for object detection and HRNet with two segmentation heads. The pipeline 
 5.  **Get Pre-trained Models:**
     * The pre-trained models required to run the web application are hosted on Google Drive.
     * **Download the model files from:**
-        * [Pre-trained models](https://drive.google.com/drive/folders/19-hgxOFR1LY6Q3jrR2njuZvkr1S2hUwG?usp=share_link)
+        * [Pre-trained models](https://drive.google.com/drive/folders/1RXircitlYSHnJrjfY1uPYQ6y5c74xfI5?usp=share_link)
 
-    * **Place the downloaded file(s)** inside the `saved_models/` directory in your project folder.
+    * **Place the downloaded file(s)** inside the `models/` directory in your project folder.
 
 ## **Results**
 
